@@ -1,0 +1,35 @@
+syntax = "proto3";
+option go_package = "./mygrpc";
+package myservice;
+import "google/protobuf/empty.proto";
+
+service MyService {
+    rpc Authenticate(AuthRequest) returns (google.protobuf.Empty) {}
+    rpc PressKey(KeyRequest) returns (google.protobuf.Empty) {}
+    rpc Click(KeyRequest) returns (google.protobuf.Empty) {}
+    rpc ReleaseKey(KeyRequest) returns (google.protobuf.Empty) {}
+}
+
+message AuthRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message AuthResponse {
+    bool success = 1;
+    string token = 2;
+}
+
+message KeyRequest {
+    string key = 1;
+    string token = 2;
+}
+
+
+
+
+message KeyResponse {
+    bool success = 1;
+    string token = 2;
+    string key = 3;
+}
