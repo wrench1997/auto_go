@@ -8,6 +8,7 @@ service MyService {
     rpc PressKey(KeyRequest) returns (google.protobuf.Empty) {}
     rpc Click(KeyRequest) returns (google.protobuf.Empty) {}
     rpc ReleaseKey(KeyRequest) returns (google.protobuf.Empty) {}
+    rpc MouseClick(MouseRequest) returns (google.protobuf.Empty) {}
 }
 
 message AuthRequest {
@@ -26,6 +27,12 @@ message KeyRequest {
 }
 
 
+message MouseRequest {
+    int64 x = 1;
+    int64 y = 2;
+    string clicktype = 3; // tpye
+    float zoom_rate = 4; //屏幕缩放率
+}
 
 
 message KeyResponse {

@@ -27,6 +27,7 @@ type MyServiceClient interface {
 	PressKey(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	Click(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ReleaseKey(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	MouseClick(ctx context.Context, in *MouseRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type myServiceClient struct {
@@ -73,6 +74,15 @@ func (c *myServiceClient) ReleaseKey(ctx context.Context, in *KeyRequest, opts .
 	return out, nil
 }
 
+func (c *myServiceClient) MouseClick(ctx context.Context, in *MouseRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/myservice.MyService/MouseClick", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MyServiceServer is the server API for MyService service.
 // All implementations must embed UnimplementedMyServiceServer
 // for forward compatibility
@@ -81,6 +91,7 @@ type MyServiceServer interface {
 	PressKey(context.Context, *KeyRequest) (*emptypb.Empty, error)
 	Click(context.Context, *KeyRequest) (*emptypb.Empty, error)
 	ReleaseKey(context.Context, *KeyRequest) (*emptypb.Empty, error)
+	MouseClick(context.Context, *MouseRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedMyServiceServer()
 }
 
@@ -99,6 +110,9 @@ func (UnimplementedMyServiceServer) Click(context.Context, *KeyRequest) (*emptyp
 }
 func (UnimplementedMyServiceServer) ReleaseKey(context.Context, *KeyRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReleaseKey not implemented")
+}
+func (UnimplementedMyServiceServer) MouseClick(context.Context, *MouseRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MouseClick not implemented")
 }
 func (UnimplementedMyServiceServer) mustEmbedUnimplementedMyServiceServer() {}
 
@@ -185,6 +199,24 @@ func _MyService_ReleaseKey_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MyService_MouseClick_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MouseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MyServiceServer).MouseClick(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/myservice.MyService/MouseClick",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MyServiceServer).MouseClick(ctx, req.(*MouseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MyService_ServiceDesc is the grpc.ServiceDesc for MyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -207,6 +239,10 @@ var MyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReleaseKey",
 			Handler:    _MyService_ReleaseKey_Handler,
+		},
+		{
+			MethodName: "MouseClick",
+			Handler:    _MyService_MouseClick_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
